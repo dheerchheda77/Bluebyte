@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">🌊 OceanMind AI</h1>
+  <h1 align="center">🌊 BlueByte AI</h1>
   <p align="center">
     <strong>AI-Driven Unified Data Platform for Oceanographic, Fisheries & Molecular Biodiversity Insight</strong>
   </p>
@@ -34,11 +34,11 @@ India possesses one of the world's largest Exclusive Economic Zones (EEZ), spann
 
 ## 🔬 Project Overview
 
-**OceanMind AI** is a full-stack intelligent data platform that brings together India's fragmented marine data ecosystem into a single, AI-powered analytical engine. The platform does **not just aggregate data** — it applies deep learning, NLP, geospatial analytics, and knowledge-graph technologies to discover hidden patterns, predict ecological events, and present actionable insights through an intuitive dashboard.
+**BlueByte AI** is a full-stack intelligent data platform that brings together India's fragmented marine data ecosystem into a single, AI-powered analytical engine. The platform does **not just aggregate data** — it applies deep learning, NLP, geospatial analytics, and knowledge-graph technologies to discover hidden patterns, predict ecological events, and present actionable insights through an intuitive dashboard.
 
 ### What Makes This Different?
 
-| Traditional Approach | OceanMind AI Approach |
+| Traditional Approach | BlueByte AI Approach |
 |---|---|
 | Data stored in separate departmental databases | Unified data lake with cross-domain linking |
 | Manual analysis by domain experts in isolation | AI-driven automated pattern discovery across domains |
@@ -209,7 +209,7 @@ India possesses one of the world's largest Exclusive Economic Zones (EEZ), spann
 ## 📁 Project Structure
 
 ```
-OceanMind-AI/
+BlueByte/
 ├── client/                     # Frontend React application
 │   ├── public/
 │   ├── src/
@@ -311,8 +311,8 @@ OceanMind-AI/
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/OceanMind-AI.git
-cd OceanMind-AI
+git clone https://github.com/shaurya212121/Bluebyte.git
+cd Bluebyte
 
 # Setup instructions coming soon...
 ```
