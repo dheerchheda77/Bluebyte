@@ -321,14 +321,14 @@ cd Bluebyte
 
 ## 👥 Team
 
-| Name | Role |
-|---|---|
-| | Team Lead & ML Engineer |
-| | Backend Developer |
-| | Frontend Developer |
-| | Data Engineer |
-| | Mobile Developer |
-| | UI/UX Designer |
+| Name | Role | Core Responsibility |
+|---|---|---|
+| **Shaurya** | Network & Streaming Engineer | 0MQ Ingestion Broker & High-Throughput Sockets |
+| **Pranshu** | Backend & Socket Bridge | FastAPI Gateway & Real-Time WebSockets |
+| **Jaanya** | AI & GNN Specialist | Marine Knowledge Graph & GNN Species Link Prediction |
+| **Vivaan** | Database Architect | PostGIS Spatial Lake & Time-Series Data Layer |
+| **Dheer** | Algorithm & DSA Specialist | Spatial Indexing (KD-Tree) & Vessel Route Optimization |
+| **Diyan** | UI/UX & GIS Frontend | Interactive Ocean GIS Dashboard & Web Visualizations |
 
 ---
 

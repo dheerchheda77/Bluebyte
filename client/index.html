@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueByte AI - Marine Dashboard</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-water"></i> BlueByte AI
+        </div>
+        <div class="status">
+            <span id="connection-status-dot" class="status-dot"></span>
+            <span id="connection-status-text">Connecting...</span>
+        </div>
+        <div class="clock" id="clock">
+            --:--:--
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            
+            <div class="panel">
+                <div class="panel-header" onclick="togglePanel('layer-controls')">
+                    <i class="fa-solid fa-layer-group"></i> Layer Controls
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="panel-content" id="layer-controls">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-heatmap" checked>
+                        <span class="toggle-slider"></span>
+                        SST Heatmap
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-buoys" checked>
+                        <span class="toggle-slider"></span>
+                        Buoy Markers
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-vessels" checked>
+                        <span class="toggle-slider"></span>
+                        Vessel Tracks
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-pfz" checked>
+                        <span class="toggle-slider"></span>
+                        PFZ Zones
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="toggle-anomalies" checked>
+                        <span class="toggle-slider"></span>
+                        Anomaly Alerts
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header" onclick="togglePanel('species-predictions')">
+                    <i class="fa-solid fa-fish"></i> Species Predictions
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="panel-content" id="species-predictions">
+                    <div id="species-list" class="species-list">
+                        <!-- Populated dynamically -->
+                        <div class="species-item loading">Loading predictions...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header" onclick="togglePanel('active-alerts')">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Active Alerts
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="panel-content" id="active-alerts">
+                    <div id="alerts-list" class="alerts-list">
+                        <!-- Populated dynamically -->
+                        <div class="alert-item info">System initialized. Awaiting data...</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Map Area -->
+        <main class="map-container">
+            <div id="map"></div>
+        </main>
+    </div>
+
+    <!-- Bottom Strip: Charts -->
+    <footer class="bottom-strip">
+        <div class="chart-container">
+            <canvas id="sstChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="salinityChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="doChart"></canvas>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- Leaflet Heat -->
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="js/websocket.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        function togglePanel(id) {
+            const panel = document.getElementById(id);
+            panel.classList.toggle('collapsed');
+            const icon = panel.previousElementSibling.querySelector('.fa-chevron-down, .fa-chevron-up');
+            if (icon) {
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            }
+        }
+    </script>
+</body>
+</html>
