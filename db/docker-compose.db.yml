@@ -1,0 +1,51 @@
+version: "3.9"
+
+# Local dev environment: PostgreSQL + PostGIS + TimescaleDB in one image.
+# `timescale/timescaledb-ha` bundles PostGIS alongside TimescaleDB, so you
+# don't need to juggle two separate Postgres images/extensions.
+#
+# Usage:
+#   docker compose -f docker-compose.db.yml up -d
+#   psql "postgresql://bluebyte:bluebyte_dev@localhost:5432/bluebyte" -f schema_postgis.sql
+#
+# The schema also auto-applies on first container start via the
+# docker-entrypoint-initdb.d mount below.
+
+services:
+  db:
+    image: timescale/timescaledb-ha:pg16
+    container_name: bluebyte_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bluebyte
+      POSTGRES_PASSWORD: bluebyte_dev          # dev only — override via .env in real deployments
+      POSTGRES_DB: bluebyte
+      TS_TUNE_MEMORY: "2GB"                     # adjust to available host RAM
+      TS_TUNE_NUM_CPUS: "2"
+    ports:
+      - "5432:5432"
+    volumes:
+      - bluebyte_pgdata:/home/postgres/pgdata/data
+      - ./schema_postgis.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./schema_postgis_addendum.sql:/docker-entrypoint-initdb.d/02_schema_addendum.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bluebyte -d bluebyte"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Optional: pgAdmin for visual inspection during development.
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bluebyte_pgadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@bluebyte.local
+      PGADMIN_DEFAULT_PASSWORD: bluebyte_dev
+    ports:
+      - "5050:80"
+
+volumes:
+  bluebyte_pgdata:
