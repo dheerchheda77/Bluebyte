@@ -76,7 +76,7 @@ app.include_router(alerts.router, prefix="/api/v1", tags=["Alerts"])
 app.include_router(ws_router, tags=["WebSocket"])
 
 # Serve frontend static files
-client_dir = os.path.join(os.path.dirname(__file__), "..", "..", "client")
+client_dir = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "react_app")
 if os.path.isdir(client_dir):
     app.mount("/", StaticFiles(directory=client_dir, html=True), name="frontend")
 
