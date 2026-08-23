@@ -41,11 +41,27 @@ export function App({
   const [timeWindow, setTimeWindow] = useState('Last 48 h')
   const [exporting, setExporting] = useState(false)
   const [exported, setExported] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const timers = useRef<number[]>([])
 
   // Hooks for backend integration
   const { status: wsStatus, stations, alerts } = useTelemetry('ws://localhost:8000/ws/live-telemetry')
   const { pfzZones, species } = useApi('http://localhost:8000')
+
+  const filteredStations = useMemo(() => {
+    if (!searchQuery.trim()) return stations;
+    const q = searchQuery.toLowerCase();
+    return stations.filter(s => s.name?.toLowerCase().includes(q) || s.id?.toLowerCase().includes(q));
+  }, [stations, searchQuery]);
+
+  const filteredZones = useMemo(() => {
+    if (!searchQuery.trim()) return pfzZones;
+    const q = searchQuery.toLowerCase();
+    return pfzZones.filter(z => 
+      z.name?.toLowerCase().includes(q) || 
+      z.targetSpecies?.toLowerCase().includes(q)
+    );
+  }, [pfzZones, searchQuery]);
 
   const selectedStation = useMemo(
     () => stations.find((s) => s.id === selectedStationId) ?? null,
@@ -79,6 +95,8 @@ export function App({
         onExport={handleExport}
         exporting={exporting}
         wsStatus={wsStatus}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       <div className="flex min-h-0 flex-1">
@@ -96,8 +114,8 @@ export function App({
             <MapCanvas
               basemap={mapStyle}
               activeLayers={activeLayers}
-              stations={stations}
-              pfzZones={pfzZones}
+              stations={filteredStations}
+              pfzZones={filteredZones}
               selectedStationId={selectedStationId}
               onSelectStation={setSelectedStationId}
             />
