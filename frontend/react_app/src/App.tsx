@@ -63,6 +63,16 @@ export function App({
     );
   }, [pfzZones, searchQuery]);
 
+  const filteredSpecies = useMemo(() => {
+    if (!searchQuery.trim()) return species;
+    const q = searchQuery.toLowerCase();
+    return species.filter(s => 
+      s.common?.toLowerCase().includes(q) || 
+      s.scientific?.toLowerCase().includes(q) ||
+      s.driver?.toLowerCase().includes(q)
+    );
+  }, [species, searchQuery]);
+
   const selectedStation = useMemo(
     () => stations.find((s) => s.id === selectedStationId) ?? null,
     [selectedStationId, stations],
@@ -147,7 +157,7 @@ export function App({
         <InsightPanel 
           station={selectedStation} 
           onClearStation={() => setSelectedStationId(null)}
-          species={species}
+          species={filteredSpecies}
         />
       </div>
     </div>

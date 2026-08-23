@@ -195,10 +195,14 @@ export function MapCanvas({
 
   useEffect(() => {
     const map = mapRef.current
-    if (!map || !selectedStationId) return
-    const station = stations.find((s) => s.id === selectedStationId)
-    if (station) map.panTo([station.lat, station.lng], { animate: true, duration: 0.3 })
-  }, [selectedStationId, stations])
+    if (!map) return
+    if (pfzZones.length === 1 && pfzZones[0].coords && pfzZones[0].coords.length > 0) {
+      const bounds = L.latLngBounds(pfzZones[0].coords)
+      map.flyToBounds(bounds, { padding: [100, 100], maxZoom: 8, duration: 1.2 })
+    } else if (stations.length === 1) {
+      map.flyTo([stations[0].lat, stations[0].lng], 7, { duration: 1.2 })
+    }
+  }, [pfzZones, stations])
 
   return <div ref={containerRef} className="h-full w-full" role="application" aria-label="Marine data map" />
 }
