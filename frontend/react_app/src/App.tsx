@@ -7,6 +7,7 @@ import { MapCanvas } from './components/MapCanvas'
 import { MapOverlays } from './components/MapOverlays'
 import { InsightPanel } from './components/InsightPanel'
 import { TimeSeriesStrip } from './components/TimeSeriesStrip'
+import { ChatWidget } from './components/ChatWidget'
 import type { LayerId } from './types/marine'
 
 import { useTelemetry } from './hooks/useTelemetry'
@@ -42,6 +43,7 @@ export function App({
   const [exporting, setExporting] = useState(false)
   const [exported, setExported] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [flyTarget, setFlyTarget] = useState<[number, number] | null>(null)
   const timers = useRef<number[]>([])
 
   // Hooks for backend integration
@@ -128,6 +130,7 @@ export function App({
               pfzZones={filteredZones}
               selectedStationId={selectedStationId}
               onSelectStation={setSelectedStationId}
+              flyToCoords={flyTarget}
             />
             <MapOverlays
               activeLayers={activeLayers}
@@ -160,6 +163,12 @@ export function App({
           species={filteredSpecies}
         />
       </div>
+
+      {/* Floating GraphRAG AI Chat Assistant */}
+      <ChatWidget 
+        onFlyTo={setFlyTarget} 
+        onSearchSelect={setSearchQuery} 
+      />
     </div>
   )
 }

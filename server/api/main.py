@@ -14,7 +14,7 @@ import sys
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from server.api.routes import ocean, predictions, alerts
+from server.api.routes import ocean, predictions, alerts, chat
 from server.api.websocket_manager import router as ws_router
 from server.api.zmq_bridge import ZMQBridge
 
@@ -73,6 +73,7 @@ app.add_middleware(
 app.include_router(ocean.router, prefix="/api/v1", tags=["Ocean Data"])
 app.include_router(predictions.router, prefix="/api/v1", tags=["Predictions"])
 app.include_router(alerts.router, prefix="/api/v1", tags=["Alerts"])
+app.include_router(chat.router, prefix="/api/v1", tags=["AI Chatbot (GraphRAG)"])
 app.include_router(ws_router, tags=["WebSocket"])
 
 # Serve frontend static files
