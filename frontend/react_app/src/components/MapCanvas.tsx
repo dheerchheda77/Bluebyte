@@ -191,7 +191,7 @@ export function MapCanvas({
           }).addTo(group)
         })
     }
-  }, [activeLayers, stations, selectedStationId])
+  }, [activeLayers, stations, selectedStationId, pfzZones])
 
   useEffect(() => {
     const map = mapRef.current
