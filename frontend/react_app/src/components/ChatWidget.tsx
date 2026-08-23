@@ -19,7 +19,7 @@ const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome-1',
     sender: 'bot',
-    text: "👋 **Ahoy! I am BlueByte AI.**\n\nI am connected to live ocean telemetry, active PFZ zones, and the GNN biodiversity knowledge graph. Ask me anything about fishing hotspots, marine heatwaves, or species migration!",
+    text: "👋 **I am BlueByte AI.**\n\nI am connected to live ocean telemetry, active PFZ zones, and the GNN biodiversity knowledge graph. Ask me anything about fishing hotspots, marine heatwaves, or species migration!",
     sources: ["BlueByte GraphRAG Engine", "INCOIS Telemetry"]
   }
 ]
