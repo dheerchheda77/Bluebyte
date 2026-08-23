@@ -1,0 +1,107 @@
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+@import "tailwindcss";
+
+@theme {
+  --color-abyss-950: #04101a;
+  --color-abyss-900: #071a28;
+  --color-abyss-800: #0b2434;
+  --color-abyss-700: #113044;
+  --color-abyss-600: #16394f;
+  
+  --color-line: #1a3c53;
+  --color-line-soft: #132b3c;
+  
+  --color-foam: #e2eef5;
+  --color-foam-muted: #8fadbe;
+  --color-foam-dim: #5f8298;
+  
+  --color-tide: #37c8e0;
+  --color-tide-deep: #1d7f93;
+  
+  --color-bio: #56d9a3;
+  --color-catch: #f2a03d;
+  --color-risk: #f2624a;
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  
+  --text-2xs: 10px;
+  --text-2xs--line-height: 14px;
+  
+  --radius-panel: 10px;
+}
+
+:root {
+  color-scheme: dark;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  background-color: var(--color-abyss-950);
+  color: var(--color-foam);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+/* Leaflet chrome tuned to the console palette */
+.leaflet-container {
+  background: var(--color-abyss-950);
+  font-family: var(--font-sans);
+}
+.leaflet-control-zoom a {
+  background: var(--color-abyss-800);
+  color: #b6ccd8;
+  border-color: var(--color-line) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-abyss-700);
+  color: #ffffff;
+}
+.leaflet-tooltip.bb-tooltip {
+  background: var(--color-abyss-800);
+  border: 1px solid var(--color-line);
+  color: var(--color-foam);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-size: 11px;
+  padding: 6px 8px;
+}
+.leaflet-tooltip.bb-tooltip::before {
+  display: none;
+}
+/* Scrollbars inside dense panels */
+.bb-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.bb-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 999px;
+}
+.bb-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+@keyframes bb-ping {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.bb-pulse {
+  animation: bb-ping 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bb-pulse {
+    animation: none;
+  }
+}

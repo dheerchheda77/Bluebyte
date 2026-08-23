@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BlueByte AI — AI-Driven Unified Data Platform for Oceanographic, Fisheries & Molecular Biodiversity Insight. Real-time GIS operations dashboard for marine monitoring.">
+    <meta name="theme-color" content="#0a0e27">
+    <title>BlueByte AI — Marine Operations Dashboard</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- ====================== NAVBAR ====================== -->
+    <header class="navbar" role="banner" aria-label="BlueByte AI navigation bar">
+        <div class="navbar-left">
+            <button class="navbar-hamburger" id="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="logo">
+                <i class="fa-solid fa-water"></i>
+                <span>BlueByte AI</span>
+            </div>
+        </div>
+
+        <div class="navbar-center">
+            <div class="status" aria-label="Connection status">
+                <span id="connection-status-dot" class="status-dot" role="status" aria-live="polite"></span>
+                <span id="connection-status-text">Connecting...</span>
+            </div>
+            <button class="mute-toggle" id="mute-toggle" aria-label="Toggle alert sounds" title="Toggle alert sounds">
+                <i class="fa-solid fa-volume-high"></i>
+                <span>Sound</span>
+            </button>
+        </div>
+
+        <div class="navbar-right">
+            <div class="clock" id="clock" aria-label="Current time">--:--:--</div>
+        </div>
+    </header>
+
+    <!-- =================== MAIN LAYOUT =================== -->
+    <div class="main-container">
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Dashboard controls">
+
+            <!-- Layer Controls Panel -->
+            <div class="panel">
+                <div class="panel-header" 
+                     id="panel-header-layers"
+                     role="button" 
+                     tabindex="0" 
+                     aria-expanded="true" 
+                     aria-controls="layer-controls"
+                     onclick="togglePanel('layer-controls', this)">
+                    <div class="panel-header-left">
+                        <i class="fa-solid fa-layer-group"></i>
+                        Layer Controls
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                </div>
+                <div class="panel-content" id="layer-controls" role="group" aria-label="Map layer toggles">
+                    <label class="toggle-control" id="label-heatmap">
+                        <input type="checkbox" id="toggle-heatmap" checked aria-label="Toggle SST Heatmap layer">
+                        <span class="toggle-slider"></span>
+                        SST Heatmap
+                    </label>
+                    <label class="toggle-control" id="label-buoys">
+                        <input type="checkbox" id="toggle-buoys" checked aria-label="Toggle Buoy Markers layer">
+                        <span class="toggle-slider"></span>
+                        Buoy Markers
+                    </label>
+                    <label class="toggle-control" id="label-vessels">
+                        <input type="checkbox" id="toggle-vessels" checked aria-label="Toggle Vessel Tracks layer">
+                        <span class="toggle-slider"></span>
+                        Vessel Tracks
+                    </label>
+                    <label class="toggle-control" id="label-pfz">
+                        <input type="checkbox" id="toggle-pfz" checked aria-label="Toggle PFZ Zones layer">
+                        <span class="toggle-slider"></span>
+                        PFZ Zones
+                    </label>
+                    <label class="toggle-control" id="label-anomalies">
+                        <input type="checkbox" id="toggle-anomalies" checked aria-label="Toggle Anomaly Alerts layer">
+                        <span class="toggle-slider"></span>
+                        Anomaly Alerts
+                    </label>
+                </div>
+            </div>
+
+            <!-- Species Predictions Panel -->
+            <div class="panel">
+                <div class="panel-header" 
+                     id="panel-header-species"
+                     role="button" 
+                     tabindex="0" 
+                     aria-expanded="true" 
+                     aria-controls="species-predictions"
+                     onclick="togglePanel('species-predictions', this)">
+                    <div class="panel-header-left">
+                        <i class="fa-solid fa-fish"></i>
+                        Species Predictions
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                </div>
+                <div class="panel-content" id="species-predictions">
+                    <div id="species-list" class="species-list" aria-live="polite" aria-label="Species prediction results">
+                        <div class="species-item loading">Loading predictions...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Alerts Panel -->
+            <div class="panel">
+                <div class="panel-header" 
+                     id="panel-header-alerts"
+                     role="button" 
+                     tabindex="0" 
+                     aria-expanded="true" 
+                     aria-controls="active-alerts"
+                     onclick="togglePanel('active-alerts', this)">
+                    <div class="panel-header-left">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Active Alerts
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron-icon"></i>
+                </div>
+                <!-- Severity Legend (§6) -->
+                <div class="severity-legend" aria-label="Alert severity color key">
+                    <div class="severity-legend-item">
+                        <span class="severity-dot critical"></span>
+                        Critical
+                    </div>
+                    <div class="severity-legend-item">
+                        <span class="severity-dot high"></span>
+                        High
+                    </div>
+                    <div class="severity-legend-item">
+                        <span class="severity-dot medium"></span>
+                        Medium
+                    </div>
+                    <div class="severity-legend-item">
+                        <span class="severity-dot low"></span>
+                        Low
+                    </div>
+                </div>
+                <div class="panel-content" id="active-alerts">
+                    <div id="alerts-list" class="alerts-list" aria-live="polite" aria-label="Live alert feed">
+                        <div class="alert-item info">
+                            <i class="fa-solid fa-circle-info" style="margin-right:5px;"></i>
+                            System initialized. Awaiting data...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Map Area -->
+        <main class="map-container" role="main" aria-label="Interactive ocean map">
+            <div id="map"></div>
+        </main>
+    </div>
+
+    <!-- ============= BOTTOM STRIP: Charts ============= -->
+    <footer class="bottom-strip" role="contentinfo" aria-label="Real-time telemetry charts">
+        <div class="chart-wrapper">
+            <h3 class="chart-title sst">SST (°C)</h3>
+            <div class="chart-container">
+                <canvas id="sstChart" aria-label="Sea Surface Temperature time series chart"></canvas>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <h3 class="chart-title salinity">Salinity (PSU)</h3>
+            <div class="chart-container">
+                <canvas id="salinityChart" aria-label="Salinity time series chart"></canvas>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <h3 class="chart-title do">Dissolved O₂ (mg/L)</h3>
+            <div class="chart-container">
+                <canvas id="doChart" aria-label="Dissolved Oxygen time series chart"></canvas>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================== SCRIPTS ================== -->
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- Leaflet Heat -->
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/websocket.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        /**
+         * Toggle a collapsible sidebar panel.
+         * Updates ARIA state and chevron rotation.
+         */
+        function togglePanel(contentId, headerEl) {
+            const panel = document.getElementById(contentId);
+            const isCollapsing = !panel.classList.contains('collapsed');
+
+            panel.classList.toggle('collapsed');
+
+            // Update header state
+            if (headerEl) {
+                headerEl.classList.toggle('collapsed', isCollapsing);
+                headerEl.setAttribute('aria-expanded', !isCollapsing);
+            }
+
+            // Save preference
+            if (typeof savePreferences === 'function') {
+                savePreferences();
+            }
+        }
+
+        // Keyboard activation for panel headers
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('panel-header')) {
+                e.preventDefault();
+                e.target.click();
+            }
+        });
+    </script>
+</body>
+</html>
