@@ -201,6 +201,7 @@ export const datasetSources: DatasetSource[] = [
     latency: 'Monthly',
     quality: 0.94,
     status: 'harmonized',
+    url: 'https://obis.org/dataset/',
   },
   {
     id: 'src-incois',
@@ -210,6 +211,7 @@ export const datasetSources: DatasetSource[] = [
     latency: '2 min',
     quality: 0.98,
     status: 'streaming',
+    url: 'https://incois.gov.in/erddap/index.html',
   },
   {
     id: 'src-noaa',
@@ -219,6 +221,7 @@ export const datasetSources: DatasetSource[] = [
     latency: 'Daily',
     quality: 0.97,
     status: 'harmonized',
+    url: 'https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW.html',
   },
   {
     id: 'src-copernicus',
@@ -228,6 +231,7 @@ export const datasetSources: DatasetSource[] = [
     latency: 'Daily',
     quality: 0.96,
     status: 'harmonized',
+    url: 'https://marine.copernicus.eu/',
   },
   {
     id: 'src-ncbi',
@@ -237,6 +241,7 @@ export const datasetSources: DatasetSource[] = [
     latency: '3 days',
     quality: 0.91,
     status: 'harmonized',
+    url: 'https://www.ncbi.nlm.nih.gov/genbank/',
   },
   {
     id: 'src-gfw',
@@ -246,5 +251,6 @@ export const datasetSources: DatasetSource[] = [
     latency: '15 min',
     quality: 0.89,
     status: 'harmonized',
+    url: 'https://globalfishingwatch.org/map/',
   },
 ]

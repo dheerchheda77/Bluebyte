@@ -261,9 +261,21 @@ function SourcesTab() {
         {datasetSources.map((s) => (
           <li key={s.id} className="py-2.5">
             <div className="flex items-baseline gap-2">
-              <span className="font-mono text-2xs uppercase tracking-wider text-tide">
-                {s.agency}
-              </span>
+              {s.url ? (
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex items-center gap-1 font-mono text-2xs uppercase tracking-wider text-tide hover:text-foam hover:underline"
+                >
+                  {s.agency}
+                  <ArrowUpRightIcon className="h-2.5 w-2.5 opacity-50 group-hover:opacity-100" />
+                </a>
+              ) : (
+                <span className="font-mono text-2xs uppercase tracking-wider text-tide">
+                  {s.agency}
+                </span>
+              )}
               <span className={`ml-auto font-mono text-2xs ${statusStyle[s.status]}`}>
                 {s.status}
               </span>

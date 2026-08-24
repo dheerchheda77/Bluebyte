@@ -93,6 +93,7 @@ export interface DatasetSource {
   latency: string
   quality: number
   status: 'streaming' | 'harmonized' | 'stale'
+  url?: string
 }
 
 export interface SeriesPoint {
