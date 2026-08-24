@@ -201,7 +201,7 @@ export const datasetSources: DatasetSource[] = [
     latency: 'Monthly',
     quality: 0.94,
     status: 'harmonized',
-    url: 'https://obis.org/dataset/',
+    url: 'https://mapper.obis.org/',
   },
   {
     id: 'src-incois',
