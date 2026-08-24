@@ -52,6 +52,18 @@ BBOX = {"min_lat": 5.0, "max_lat": 25.0, "min_lon": 60.0, "max_lon": 100.0}
 RECORDS_PER_SPECIES = 150
 
 
+import urllib3
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+def get_robust_session():
+    session = requests.Session()
+    retry = Retry(connect=5, read=5, backoff_factor=1.0, status_forcelist=[ 500, 502, 503, 504 ])
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
 def fetch_obis_occurrences(scientific_name: str, size: int = 150) -> list:
     """
     Fetch real fish occurrence GPS coordinates from the OBIS UNESCO API.
@@ -66,9 +78,10 @@ def fetch_obis_occurrences(scientific_name: str, size: int = 150) -> list:
         "startlongitude": BBOX["min_lon"],
         "endlongitude": BBOX["max_lon"],
     }
+    session = get_robust_session()
     try:
         logger.info(f"  Fetching OBIS records for {scientific_name}...")
-        r = requests.get(url, params=params, timeout=30)
+        r = session.get(url, params=params, timeout=30)
         r.raise_for_status()
         data = r.json()
         results = data.get("results", [])
