@@ -66,6 +66,7 @@ ml/models/
 data/raw/
 data/processed/
 *.csv
+!data/real_datasets/indian_ocean_occurrences.csv
 *.parquet
 *.json
 !package.json

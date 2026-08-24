@@ -13,6 +13,8 @@ Same synthetic-data intent as the original, adapted to the new schema:
 import asyncio
 import random
 import uuid
+import csv
+import os
 from datetime import datetime, timedelta, timezone
 
 import asyncpg
@@ -23,12 +25,32 @@ from db.etl_pipeline import OutlierPreservingETL, compute_h3_index
 INDIA_LAT_RANGE = (5.0, 25.0)
 INDIA_LON_RANGE = (65.0, 95.0)
 
+# Load real dataset
+REAL_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "real_datasets", "indian_ocean_occurrences.csv")
+REAL_DATA = []
+try:
+    with open(REAL_CSV_PATH, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            REAL_DATA.append(row)
+    print(f"✅ Loaded {len(REAL_DATA)} real records from CSV for DB seeding.")
+except Exception as e:
+    print(f"⚠️ Could not load real CSV, falling back to synthetic generator: {e}")
+
+def get_real_point():
+    if REAL_DATA:
+        row = random.choice(REAL_DATA)
+        return float(row["lat"]), float(row["lon"]), float(row["sst_celsius"]), float(row["salinity_psu"]), float(row["chlorophyll_mg_m3"]), float(row["dissolved_oxygen_mg_l"])
+    else:
+        lat = random.uniform(*INDIA_LAT_RANGE)
+        lon = random.uniform(*INDIA_LON_RANGE)
+        return lat, lon, random.uniform(27.0, 30.0), random.uniform(33.5, 35.0), random.uniform(0.1, 5.0), random.uniform(5.5, 8.0)
+
 
 async def seed_ocean_grids(conn):
     grids = []
     for i in range(20):
-        lat_base = random.uniform(*INDIA_LAT_RANGE)
-        lon_base = random.uniform(*INDIA_LON_RANGE)
+        lat_base, lon_base, _, _, _, _ = get_real_point()
         # Simple 1x1 degree box polygon, WKT
         polygon_wkt = (
             f"POLYGON(({lon_base} {lat_base}, {lon_base+1} {lat_base}, "
@@ -51,7 +73,7 @@ async def seed_species(conn):
     species = [
         ("Indian Mackerel", "Rastrelliger kanagurta", "Scombridae", "Pelagic", "Least Concern", 26.0, 31.0, 33.0, 36.0, 0, 100, "High"),
         ("Oil Sardine", "Sardinella longiceps", "Clupeidae", "Pelagic", "Least Concern", 27.0, 30.5, 33.5, 35.5, 0, 50, "High"),
-        ("Hilsa", "Tenualosa ilisha", "Clupeidae", "Anadromous", "Least Concern", 25.0, 30.0, 10.0, 34.0, 0, 50, "Very High"),  # wide salinity range: anadromous
+        ("Hilsa", "Tenualosa ilisha", "Clupeidae", "Anadromous", "Least Concern", 25.0, 30.0, 10.0, 34.0, 0, 50, "Very High"),
         ("Bombay Duck", "Harpadon nehereus", "Synodontidae", "Demersal", "Least Concern", 24.0, 29.0, 32.0, 35.0, 10, 200, "Medium"),
         ("Yellowfin Tuna", "Thunnus albacares", "Scombridae", "Pelagic", "Near Threatened", 20.0, 30.0, 34.0, 36.5, 0, 250, "Very High"),
         ("Penaeid Shrimp", "Penaeus indicus", "Penaeidae", "Benthic", "Least Concern", 26.0, 32.0, 30.0, 35.0, 5, 80, "High"),
@@ -72,8 +94,7 @@ async def seed_species(conn):
 async def seed_edna_samples(conn, species_ids):
     samples = []
     for i in range(15):
-        lat = random.uniform(*INDIA_LAT_RANGE)
-        lon = random.uniform(*INDIA_LON_RANGE)
+        lat, lon, _, _, _, _ = get_real_point()
         samples.append((
             f"EDNA-{i:04d}",
             random.choice(species_ids)["id"],
@@ -97,31 +118,22 @@ async def seed_edna_samples(conn, species_ids):
 
 
 async def seed_buoy_readings(etl: OutlierPreservingETL, n_normal: int = 80, n_outliers: int = 5):
-    """Seeds normal readings plus a handful of deliberate outliers
-    (marine-heatwave-style SST spikes, hypoxia-style DO crashes) so the
-    outlier flagging can be demoed against known-injected anomalies.
-
-    Uses only 4 sensors (not 10) so each accumulates ~20 baseline
-    readings before any outlier is scored — MAD-based scoring needs a
-    reasonable sample size per sensor (the ETL requires >=5 combined
-    points before it will score at all); spreading readings across too
-    many sensors leaves some with too little history, which is what
-    caused missed/false-positive flags in the first seeding run."""
     sensor_ids = [f"BUOY-{i}" for i in range(1, 5)]
     now = datetime.now(timezone.utc)
 
     normal_rows = []
     for _ in range(n_normal):
         ts = now - timedelta(hours=random.randint(1, 72))
+        lat, lon, sst, sal, chl, do = get_real_point()
         normal_rows.append({
             "sensor_id": random.choice(sensor_ids),
             "ts": ts,
-            "lat": random.uniform(*INDIA_LAT_RANGE),
-            "lon": random.uniform(*INDIA_LON_RANGE),
-            "sst": random.uniform(27.0, 30.0),          # normal SST band
-            "salinity": random.uniform(33.5, 35.0),
-            "chlorophyll_a": random.uniform(0.1, 5.0),
-            "dissolved_oxygen": random.uniform(5.5, 8.0),  # normal DO band
+            "lat": lat,
+            "lon": lon,
+            "sst": sst,
+            "salinity": sal,
+            "chlorophyll_a": chl,
+            "dissolved_oxygen": do,
             "wave_height": random.uniform(0.5, 3.0),
             "current_velocity": random.uniform(0.1, 2.0),
             "current_direction": random.uniform(0, 360),
@@ -130,16 +142,17 @@ async def seed_buoy_readings(etl: OutlierPreservingETL, n_normal: int = 80, n_ou
     outlier_rows = []
     for i in range(n_outliers):
         ts = now - timedelta(hours=random.randint(1, 72))
+        lat, lon, base_sst, sal, chl, base_do = get_real_point()
         is_heatwave = i % 2 == 0
         outlier_rows.append({
             "sensor_id": random.choice(sensor_ids),
             "ts": ts,
-            "lat": random.uniform(*INDIA_LAT_RANGE),
-            "lon": random.uniform(*INDIA_LON_RANGE),
-            "sst": random.uniform(34.0, 37.0) if is_heatwave else random.uniform(27.0, 30.0),
-            "salinity": random.uniform(33.5, 35.0),
-            "chlorophyll_a": random.uniform(0.1, 5.0),
-            "dissolved_oxygen": random.uniform(1.0, 2.5) if not is_heatwave else random.uniform(5.5, 8.0),  # hypoxia crash
+            "lat": lat,
+            "lon": lon,
+            "sst": base_sst + random.uniform(3.0, 5.0) if is_heatwave else base_sst,
+            "salinity": sal,
+            "chlorophyll_a": chl,
+            "dissolved_oxygen": random.uniform(1.0, 2.5) if not is_heatwave else base_do,
             "wave_height": random.uniform(0.5, 3.0),
             "current_velocity": random.uniform(0.1, 2.0),
             "current_direction": random.uniform(0, 360),
