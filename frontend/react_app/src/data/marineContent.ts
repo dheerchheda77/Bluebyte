@@ -201,7 +201,7 @@ export const datasetSources: DatasetSource[] = [
     latency: 'Monthly',
     quality: 0.94,
     status: 'harmonized',
-    url: 'https://mapper.obis.org/',
+    url: 'https://api.obis.org/v3/occurrence?scientificname=Sardinella+longiceps',
   },
   {
     id: 'src-incois',
