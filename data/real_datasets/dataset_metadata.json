@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-08-24T09:26:36.957944",
+  "sources": [
+    {
+      "name": "OBIS",
+      "url": "https://api.obis.org",
+      "license": "CC0 Public Domain"
+    },
+    {
+      "name": "NOAA CoastWatch ERDDAP",
+      "url": "https://coastwatch.pfeg.noaa.gov/erddap",
+      "license": "US Public Domain"
+    }
+  ],
+  "species_record_counts": {
+    "sardine": 150,
+    "mackerel": 150,
+    "tuna": 150,
+    "bombay_duck": 150,
+    "shrimp": 150,
+    "hilsa": 134
+  }
+}
